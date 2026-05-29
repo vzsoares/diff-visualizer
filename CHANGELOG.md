@@ -1,3 +1,11 @@
+## v1.5.0
+
+### Documentation
+- rewrite README and update metadata for Diff Sharer
+
+### Chores
+- bump version to 1.5.0
+
 ## v1.4.0
 
 ### Features
