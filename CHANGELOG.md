@@ -1,3 +1,11 @@
+## v1.5.2
+
+### Documentation
+- update docs and tests for single-route diff sharer app
+
+### Chores
+- bump version to 1.5.2
+
 ## v1.5.1
 
 ### Chores
