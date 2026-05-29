@@ -1,6 +1,6 @@
-import LZString from "lz-string";
-import { html as diff2htmlHtml } from "diff2html";
 import { createTwoFilesPatch } from "diff";
+import { html as diff2htmlHtml } from "diff2html";
+import LZString from "lz-string";
 
 export function encodeDiff(diff: string): string {
     return LZString.compressToEncodedURIComponent(diff);

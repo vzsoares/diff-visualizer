@@ -43,8 +43,12 @@
     --d2h-line-border-color: var(--d2h-dark-line-border-color);
     --d2h-file-header-bg-color: var(--d2h-dark-file-header-bg-color);
     --d2h-file-header-border-color: var(--d2h-dark-file-header-border-color);
-    --d2h-empty-placeholder-bg-color: var(--d2h-dark-empty-placeholder-bg-color);
-    --d2h-empty-placeholder-border-color: var(--d2h-dark-empty-placeholder-border-color);
+    --d2h-empty-placeholder-bg-color: var(
+        --d2h-dark-empty-placeholder-bg-color
+    );
+    --d2h-empty-placeholder-border-color: var(
+        --d2h-dark-empty-placeholder-border-color
+    );
     --d2h-selected-color: var(--d2h-dark-selected-color);
     --d2h-ins-bg-color: var(--d2h-dark-ins-bg-color);
     --d2h-ins-border-color: var(--d2h-dark-ins-border-color);

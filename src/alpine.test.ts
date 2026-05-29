@@ -3,8 +3,7 @@ import { decodeDiff, encodeDiff, generateDiff } from "./diff";
 
 describe("encodeDiff / decodeDiff", () => {
     it("roundtrips a unified diff", () => {
-        const diff =
-            "--- a/file.txt\n+++ b/file.txt\n@@ -1 +1 @@\n-old\n+new";
+        const diff = "--- a/file.txt\n+++ b/file.txt\n@@ -1 +1 @@\n-old\n+new";
         expect(decodeDiff(encodeDiff(diff))).toBe(diff);
     });
 
