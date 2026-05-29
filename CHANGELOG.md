@@ -1,3 +1,11 @@
+## v1.5.1
+
+### Chores
+- bump version to 1.5.1
+
+### Other
+- format code and organize imports
+
 ## v1.5.0
 
 ### Documentation
