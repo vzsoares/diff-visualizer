@@ -95,8 +95,7 @@ cards.
   blog post cards, the counter demo.
 - **Gradient headings** — `bg-gradient-to-r from-brand-1 … bg-clip-text
   text-transparent`.
-- **Nav** — brand wordmark (gradient "VAT" + muted "Template"), text links with
-  the active route in `text-brand-1 font-semibold`, dark-mode toggle as
+- **Nav** — brand wordmark ("Diff Sharer" in gradient text), dark-mode toggle as
   `btn btn-ghost btn-circle`.
 
 ## Do's and Don'ts

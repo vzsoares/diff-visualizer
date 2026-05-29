@@ -1,8 +1,16 @@
 import { expect, test } from "@playwright/test";
-import { posts } from "../src/content/posts";
 
 // baseURL already includes the Pages sub-path, so navigate with RELATIVE paths
 // (a leading "/" would escape to the origin root).
+
+const SAMPLE_DIFF = `--- a/src/hello.ts
++++ b/src/hello.ts
+@@ -1,3 +1,4 @@
+ export function greet(name: string): string {
+-    return \`Hello, \${name}!\`;
++    const msg = \`Hello, \${name}!\`;
++    return msg;
+ }`;
 
 test("home loads under the base path with all assets and boots Alpine", async ({
     page,
@@ -17,38 +25,27 @@ test("home loads under the base path with all assets and boots Alpine", async ({
 
     await page.goto("./");
     await expect(
-        page.getByRole("heading", { name: "Vite + Alpine + Tailwind" }),
+        page.getByRole("heading", { name: "Paste your diff" }),
     ).toBeVisible();
     await expect.poll(() => page.evaluate(() => "Alpine" in window)).toBe(true);
     expect(failures, "no failed requests on the built home page").toEqual([]);
 });
 
-test("a deep link resolves and survives a reload (SPA fallback + basePath)", async ({
+test("a shared URL resolves and survives a reload (SPA fallback + basePath)", async ({
     page,
 }) => {
-    const slug = posts[0].slug;
-    await page.goto(`blog/${slug}`);
-    await expect(
-        page.getByRole("heading", { name: posts[0].title, level: 1 }),
-    ).toBeVisible();
-
-    // Reloading a non-index path is the GitHub Pages 404.html / SPA-fallback case.
-    await page.reload();
-    await expect(
-        page.getByRole("heading", { name: posts[0].title, level: 1 }),
-    ).toBeVisible();
-
-    // The URL stays under a single base (guards the double-base regression).
-    const path = new URL(page.url()).pathname;
-    expect(path.startsWith("/vite-alpine-tailwind/")).toBe(true);
-    expect(path).not.toContain("vite-alpine-tailwind/vite-alpine-tailwind");
-});
-
-test("client navigation keeps the base prefix", async ({ page }) => {
+    // Navigate to home, share a diff, then reload to exercise the 404.html fallback.
     await page.goto("./");
-    await page.getByRole("link", { name: "Blog", exact: true }).click();
-    await expect(page).toHaveURL(/\/vite-alpine-tailwind\/blog$/);
-    await expect(
-        page.getByRole("heading", { name: "Blog", level: 1 }),
-    ).toBeVisible();
+    await page.getByTestId("diff-input").fill(SAMPLE_DIFF);
+    await page.getByTestId("share-btn").click();
+    await expect(page.getByTestId("diff-output")).toBeVisible();
+
+    // Reloading a ?d=… URL is the GitHub Pages 404.html / SPA-fallback case.
+    await page.reload();
+    await expect(page.getByTestId("diff-output")).toBeVisible();
+
+    // URL must stay under the single base path (guards the double-base regression).
+    const { pathname } = new URL(page.url());
+    expect(pathname.startsWith("/diff-visualizer/")).toBe(true);
+    expect(pathname).not.toContain("diff-visualizer/diff-visualizer");
 });
