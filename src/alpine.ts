@@ -1,57 +1,82 @@
-import { type Post, posts } from "./content/posts";
+import { decodeDiff, encodeDiff, generateDiff, renderDiff } from "./diff";
 
-/** Reactive state for the `counter` demo component. */
-export interface CounterState {
-    count: number;
-    increment(): void;
-    decrement(): void;
-    reset(): void;
+export interface DiffSharerState {
+    inputMode: "raw" | "compare";
+    rawDiff: string;
+    originalText: string;
+    modifiedText: string;
+    renderedHtml: string;
+    mode: "editor" | "viewer";
+    copied: boolean;
+    shareUrl: string;
+    init(this: DiffSharerState): void;
+    share(this: DiffSharerState): void;
+    compare(this: DiffSharerState): void;
+    copyLink(this: DiffSharerState): Promise<void>;
+    newDiff(this: DiffSharerState): void;
 }
 
-/**
- * The typed `counter` Alpine.data component used by the home page's demo. Kept as
- * a plain factory (no DOM/Alpine deps) so it is trivially unit-testable.
- */
-export function counter(start = 0): CounterState {
+function pushDiff(state: DiffSharerState, diff: string) {
+    const encoded = encodeDiff(diff);
+    const url = new URL(window.location.href);
+    url.search = "";
+    url.searchParams.set("d", encoded);
+    window.history.pushState({}, "", url.toString());
+    state.shareUrl = url.toString();
+    state.renderedHtml = renderDiff(diff);
+    state.mode = "viewer";
+}
+
+export function diffSharer(): DiffSharerState {
     return {
-        count: start,
-        increment(this: CounterState) {
-            this.count++;
-        },
-        decrement(this: CounterState) {
-            this.count--;
-        },
-        reset(this: CounterState) {
-            this.count = start;
-        },
-    };
-}
+        inputMode: "raw",
+        rawDiff: "",
+        originalText: "",
+        modifiedText: "",
+        renderedHtml: "",
+        mode: "editor",
+        copied: false,
+        shareUrl: "",
 
-/** Reactive state for the `/blog/:slug` post page. */
-export interface BlogPostState {
-    post?: Post;
-    prev?: Post;
-    next?: Post;
-    load(slug: string): void;
-}
+        init(this: DiffSharerState) {
+            const params = new URLSearchParams(window.location.search);
+            const encoded = params.get("d");
+            if (encoded) {
+                const decoded = decodeDiff(encoded);
+                this.rawDiff = decoded;
+                this.renderedHtml = renderDiff(decoded);
+                this.shareUrl = window.location.href;
+                this.mode = "viewer";
+            }
+        },
 
-/**
- * `blogPost` Alpine.data for the post page (`src/pages/post.html`). Driven by
- * `x-effect="load($params.slug)"`
- * so it (re)resolves the post whenever the `:slug` route param changes — pinecone
- * does NOT re-render the template when navigating between two posts on the same
- * route (e.g. prev/next), so reading the slug once in `init()` would go stale.
- */
-export function blogPost(): BlogPostState {
-    return {
-        post: undefined,
-        prev: undefined,
-        next: undefined,
-        load(this: BlogPostState, slug: string) {
-            const index = posts.findIndex((p) => p.slug === slug);
-            this.post = index >= 0 ? posts[index] : undefined;
-            this.prev = index > 0 ? posts[index - 1] : undefined;
-            this.next = index >= 0 ? posts[index + 1] : undefined;
+        share(this: DiffSharerState) {
+            const trimmed = this.rawDiff.trim();
+            if (!trimmed) return;
+            pushDiff(this, trimmed);
+        },
+
+        compare(this: DiffSharerState) {
+            const diff = generateDiff(this.originalText, this.modifiedText);
+            pushDiff(this, diff);
+        },
+
+        async copyLink(this: DiffSharerState) {
+            await navigator.clipboard.writeText(this.shareUrl);
+            this.copied = true;
+            setTimeout(() => {
+                this.copied = false;
+            }, 2000);
+        },
+
+        newDiff(this: DiffSharerState) {
+            window.history.pushState({}, "", window.location.pathname);
+            this.rawDiff = "";
+            this.originalText = "";
+            this.modifiedText = "";
+            this.renderedHtml = "";
+            this.shareUrl = "";
+            this.mode = "editor";
         },
     };
 }

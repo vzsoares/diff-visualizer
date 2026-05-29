@@ -7,19 +7,18 @@ test("theme toggle switches dark mode on and off", async ({ page }) => {
     await page.goto("/");
 
     const body = page.locator("body");
-    const card = page.getByTestId("demo-card");
     const toggle = page.getByRole("button", { name: "Toggle dark mode" });
 
     // Light baseline.
     await expect(body).not.toHaveClass(/\bdark\b/);
-    const lightBg = await card.evaluate(
+    const lightBg = await body.evaluate(
         (el) => getComputedStyle(el).backgroundColor,
     );
 
     // Toggle on: body gets `.dark` and a `dark:` utility actually changes.
     await toggle.click();
     await expect(body).toHaveClass(/\bdark\b/);
-    const darkBg = await card.evaluate(
+    const darkBg = await body.evaluate(
         (el) => getComputedStyle(el).backgroundColor,
     );
     expect(darkBg).not.toBe(lightBg);

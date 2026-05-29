@@ -1,45 +1,48 @@
 import { describe, expect, it } from "vitest";
-import { blogPost, counter } from "./alpine";
+import { decodeDiff, encodeDiff, generateDiff } from "./diff";
 
-describe("counter", () => {
-    it("increments, decrements, and resets from its start value", () => {
-        const c = counter(2);
-        expect(c.count).toBe(2);
-        c.increment();
-        expect(c.count).toBe(3);
-        c.decrement();
-        c.decrement();
-        expect(c.count).toBe(1);
-        c.reset();
-        expect(c.count).toBe(2);
+describe("encodeDiff / decodeDiff", () => {
+    it("roundtrips a unified diff", () => {
+        const diff =
+            "--- a/file.txt\n+++ b/file.txt\n@@ -1 +1 @@\n-old\n+new";
+        expect(decodeDiff(encodeDiff(diff))).toBe(diff);
     });
 
-    it("defaults to 0", () => {
-        expect(counter().count).toBe(0);
+    it("handles an empty string", () => {
+        expect(decodeDiff(encodeDiff(""))).toBe("");
+    });
+
+    it("produces a whitespace-free URL-safe string", () => {
+        const encoded = encodeDiff(
+            "--- a/foo.ts\n+++ b/foo.ts\n@@ -1,3 +1,3 @@\n context\n-old\n+new",
+        );
+        expect(encoded).not.toMatch(/\s/);
+        expect(encoded).not.toMatch(/[+/=]/);
+    });
+
+    it("roundtrips a large diff without data loss", () => {
+        const bigDiff = Array.from(
+            { length: 100 },
+            (_, i) => `-line ${i}\n+line ${i} updated`,
+        ).join("\n");
+        expect(decodeDiff(encodeDiff(bigDiff))).toBe(bigDiff);
     });
 });
 
-describe("blogPost", () => {
-    it("resolves a post and its prev/next neighbours by slug", () => {
-        const b = blogPost();
-        b.load("sed-do-eiusmod"); // the middle post
-        expect(b.post?.slug).toBe("sed-do-eiusmod");
-        expect(b.prev?.slug).toBe("lorem-ipsum-dolor");
-        expect(b.next?.slug).toBe("ut-enim-ad-minim");
+describe("generateDiff", () => {
+    it("produces a unified diff with +/- markers", () => {
+        const diff = generateDiff("hello\nworld\n", "hello\nearth\n");
+        expect(diff).toContain("-world");
+        expect(diff).toContain("+earth");
     });
 
-    it("has no prev on the first post", () => {
-        const b = blogPost();
-        b.load("lorem-ipsum-dolor");
-        expect(b.prev).toBeUndefined();
-        expect(b.next?.slug).toBe("sed-do-eiusmod");
+    it("produces an empty hunk for identical texts", () => {
+        const diff = generateDiff("same\n", "same\n");
+        expect(diff).not.toContain("@@");
     });
 
-    it("leaves post undefined for an unknown slug", () => {
-        const b = blogPost();
-        b.load("nope");
-        expect(b.post).toBeUndefined();
-        expect(b.prev).toBeUndefined();
-        expect(b.next).toBeUndefined();
+    it("uses the provided filename in the header", () => {
+        const diff = generateDiff("a\n", "b\n", "foo.ts");
+        expect(diff).toContain("foo.ts");
     });
 });

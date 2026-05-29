@@ -1,36 +1,15 @@
 import { expect, test } from "@playwright/test";
 
-test("navigates between home and about without a full reload", async ({
-    page,
-}) => {
-    await page.goto("/");
+test("unknown route shows the 404 page", async ({ page }) => {
+    await page.goto("/this-does-not-exist");
     await expect(
-        page.getByRole("heading", { name: "Vite + Alpine + Tailwind" }),
-    ).toBeVisible();
-
-    // Client-side navigation (pinecone-router intercepts the link).
-    await page.getByRole("link", { name: "About", exact: true }).click();
-    await expect(page).toHaveURL(/\/about$/);
-    await expect(
-        page.getByRole("heading", { name: "About this template" }),
-    ).toBeVisible();
-
-    // Alpine initializes the swapped-in Web Component (accordion works).
-    const answer = page.getByTestId("faq-answer");
-    await expect(answer).toBeHidden();
-    await page.getByTestId("faq-toggle").click();
-    await expect(answer).toBeVisible();
-
-    // ...and back home.
-    await page.getByRole("link", { name: "Home", exact: true }).click();
-    await expect(page).toHaveURL(/\/$/);
-    await expect(
-        page.getByRole("heading", { name: "Vite + Alpine + Tailwind" }),
+        page.getByRole("heading", { name: "Page not found" }),
     ).toBeVisible();
 });
 
-test("highlights the active nav link", async ({ page }) => {
-    await page.goto("/blog");
-    const blogLink = page.getByRole("link", { name: "Blog", exact: true });
-    await expect(blogLink).toHaveClass(/text-brand-1/);
+test("logo link navigates back to home", async ({ page }) => {
+    await page.goto("/this-does-not-exist");
+    await page.getByRole("link", { name: "Diff Sharer" }).click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByTestId("diff-input")).toBeVisible();
 });

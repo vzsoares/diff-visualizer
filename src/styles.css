@@ -1,42 +1,63 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
-/* daisyUI component library. Themes are switched via `data-theme` on <body>
-   (wired to the dark-mode toggle in index.html). */
 @plugin "daisyui" {
     themes:
         light --default,
         dark --prefersdark;
 }
 
-/* Brand palette — the gradient/accent identity. Rebrand the whole site by
-   editing these three tokens; they generate `brand-1/2/3` color utilities
-   (e.g. `from-brand-1`, `text-brand-1`). */
 @theme {
-    --color-brand-1: #9333ea; /* purple-600 */
-    --color-brand-2: #2563eb; /* blue-600 */
-    --color-brand-3: #0d9488; /* teal-600 */
+    --color-brand-1: #9333ea;
+    --color-brand-2: #2563eb;
+    --color-brand-3: #0d9488;
 }
 
-/* Map daisyUI's `primary` to the brand color so `btn-primary` etc. match. */
 [data-theme="light"],
 [data-theme="dark"] {
     --color-primary: var(--color-brand-1);
     --color-primary-content: #ffffff;
 }
 
-/* Drive `dark:` utilities from a `.dark` class (toggled in index.html) instead
-   of the OS `prefers-color-scheme` default, so the theme toggle controls them. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Prevent FOUC: hide elements with x-cloak until Alpine initializes. */
 [x-cloak] {
     /* biome-ignore lint/complexity/noImportantStyles: x-cloak needs !important to reliably prevent FOUC */
     display: none !important;
 }
 
-/* Visible keyboard-focus indicator for all interactive elements. */
 :focus-visible {
     outline: 2px solid var(--color-brand-1);
     outline-offset: 2px;
     border-radius: 2px;
+}
+
+/* diff2html dark-mode: remap diff2html's own CSS custom properties to their
+   built-in dark counterparts so every rule that uses var(--d2h-*) flips
+   automatically — no need to duplicate individual selectors. */
+.dark .d2h-wrapper {
+    color: var(--d2h-dark-color);
+    background-color: var(--d2h-dark-bg-color);
+    --d2h-bg-color: var(--d2h-dark-bg-color);
+    --d2h-border-color: var(--d2h-dark-border-color);
+    --d2h-dim-color: var(--d2h-dark-dim-color);
+    --d2h-line-border-color: var(--d2h-dark-line-border-color);
+    --d2h-file-header-bg-color: var(--d2h-dark-file-header-bg-color);
+    --d2h-file-header-border-color: var(--d2h-dark-file-header-border-color);
+    --d2h-empty-placeholder-bg-color: var(--d2h-dark-empty-placeholder-bg-color);
+    --d2h-empty-placeholder-border-color: var(--d2h-dark-empty-placeholder-border-color);
+    --d2h-selected-color: var(--d2h-dark-selected-color);
+    --d2h-ins-bg-color: var(--d2h-dark-ins-bg-color);
+    --d2h-ins-border-color: var(--d2h-dark-ins-border-color);
+    --d2h-ins-highlight-bg-color: var(--d2h-dark-ins-highlight-bg-color);
+    --d2h-ins-label-color: var(--d2h-dark-ins-label-color);
+    --d2h-del-bg-color: var(--d2h-dark-del-bg-color);
+    --d2h-del-border-color: var(--d2h-dark-del-border-color);
+    --d2h-del-highlight-bg-color: var(--d2h-dark-del-highlight-bg-color);
+    --d2h-del-label-color: var(--d2h-dark-del-label-color);
+    --d2h-change-del-color: var(--d2h-dark-change-del-color);
+    --d2h-change-ins-color: var(--d2h-dark-change-ins-color);
+    --d2h-info-bg-color: var(--d2h-dark-info-bg-color);
+    --d2h-info-border-color: var(--d2h-dark-info-border-color);
+    --d2h-change-label-color: var(--d2h-dark-change-label-color);
+    --d2h-moved-label-color: var(--d2h-dark-moved-label-color);
 }
