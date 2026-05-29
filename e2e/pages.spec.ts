@@ -23,7 +23,7 @@ for (const { url, heading } of PAGES) {
         await page.goto(url);
 
         await expect(
-            page.getByRole("heading", { name: heading }),
+            page.locator("h1").filter({ hasText: heading }),
         ).toBeVisible();
         // app.ts ran (assigns window.Alpine) — the module loaded and started.
         await expect

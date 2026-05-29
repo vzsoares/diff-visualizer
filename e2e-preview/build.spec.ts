@@ -25,7 +25,7 @@ test("home loads under the base path with all assets and boots Alpine", async ({
 
     await page.goto("./");
     await expect(
-        page.getByRole("heading", { name: "Paste your diff" }),
+        page.locator("h1").filter({ hasText: "Paste your diff" }),
     ).toBeVisible();
     await expect.poll(() => page.evaluate(() => "Alpine" in window)).toBe(true);
     expect(failures, "no failed requests on the built home page").toEqual([]);
