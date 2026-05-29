@@ -1,7 +1,7 @@
 {
-    "name": "vite-alpine-tailwind",
+    "name": "diff-visualizer",
     "version": "1.4.0",
-    "description": "A lightweight client-side SPA starter combining Vite, Alpine.js and Tailwind CSS — UI authored as native Web Components, routed with pinecone-router",
+    "description": "Paste a unified diff — or compare two texts — and share it as a URL. No server, no signup.",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
@@ -28,26 +28,24 @@
         }
     },
     "keywords": [
-        "vite",
+        "diff",
+        "diff-viewer",
+        "diff-sharer",
+        "unified-diff",
+        "share",
         "alpinejs",
-        "tailwindcss",
-        "web-components",
-        "custom-elements",
-        "pinecone-router",
-        "spa",
-        "template",
-        "starter",
-        "typescript"
+        "vite",
+        "tailwindcss"
     ],
     "author": "vzsoares",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vzsoares/vite-alpine-tailwind.git"
+        "url": "https://github.com/vzsoares/diff-visualizer.git"
     },
-    "homepage": "https://github.com/vzsoares/vite-alpine-tailwind",
+    "homepage": "https://vzsoares.github.io/diff-visualizer/",
     "bugs": {
-        "url": "https://github.com/vzsoares/vite-alpine-tailwind/issues"
+        "url": "https://github.com/vzsoares/diff-visualizer/issues"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.4.15",
